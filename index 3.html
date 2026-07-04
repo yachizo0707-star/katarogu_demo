@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>容器カタログ | Rispack</title>
+<style>
+  :root{
+    --paper:#F7F5EF;
+    --paper-deep:#EFEBDF;
+    --ink:#2B2A26;
+    --ink-soft:#6B675E;
+    --line:#DEDACC;
+    --green:#3F6B4A;
+    --green-deep:#2C4E36;
+    --card-shadow: 0 1px 2px rgba(43,42,38,0.06), 0 6px 16px rgba(43,42,38,0.05);
+
+    --c-bento:#C6533F;
+    --c-sushi:#A97A1E;
+    --c-sashimi:#28647A;
+    --c-reisouzai:#5E7F6B;
+    --c-onsouzai:#D98A2B;
+    --c-chikusan:#7A4A3C;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  header{
+    position:sticky; top:0; z-index:10;
+    background:var(--paper);
+    padding-top: calc(14px + env(safe-area-inset-top));
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:baseline; gap:8px;
+    padding:0 18px;
+  }
+  .brand .mark{
+    width:9px; height:9px; border-radius:2px;
+    background:var(--green);
+    display:inline-block;
+    transform:rotate(45deg);
+    margin-bottom:2px;
+  }
+  h1{
+    font-size:19px; font-weight:700; letter-spacing:.02em; margin:0;
+  }
+  .sub{
+    font-size:11px; color:var(--ink-soft); letter-spacing:.08em; margin:0 0 0 auto; padding-right:2px;
+  }
+
+  .crumbs{
+    display:flex; align-items:center; flex-wrap:wrap; gap:4px;
+    padding:10px 18px 0 18px;
+    font-size:13px; color:var(--ink-soft);
+    min-height:20px;
+  }
+  .crumbs button{
+    background:none; border:none; padding:2px 4px; margin:0;
+    font:inherit; color:var(--green-deep); font-weight:600; cursor:pointer;
+    border-radius:6px;
+  }
+  .crumbs button:active{ background:var(--paper-deep); }
+  .crumbs .sep{ color:var(--line); }
+  .crumbs .current{ color:var(--ink-soft); padding:2px 4px; }
+
+  main{ padding:16px 18px 40px 18px; }
+
+  .backbar{
+    display:flex; align-items:center; gap:6px;
+    margin-bottom:14px;
+  }
+  .backbtn{
+    display:flex; align-items:center; gap:4px;
+    background:#fff; border:1px solid var(--line); border-radius:20px;
+    padding:8px 14px 8px 10px; font-size:14px; font-weight:600; color:var(--ink);
+    box-shadow:var(--card-shadow);
+  }
+  .backbtn:active{ background:var(--paper-deep); }
+  .backbtn svg{ width:16px; height:16px; }
+
+  .cat-title{
+    font-size:24px; font-weight:800; letter-spacing:.02em;
+    margin:2px 2px 16px 2px; color:var(--ink);
+    padding-bottom:12px; border-bottom:2px solid var(--line);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:12px;
+  }
+  .grid.top{ grid-template-columns: repeat(2, 1fr); }
+
+  .cat-card{
+    position:relative;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:16px 14px;
+    text-align:left;
+    box-shadow:var(--card-shadow);
+    overflow:hidden;
+    min-height:76px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+  }
+  .cat-card::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:var(--accent, var(--green));
+  }
+  .cat-card .name{ font-size:16px; font-weight:700; }
+  .cat-card .meta{ font-size:11.5px; color:var(--ink-soft); margin-top:3px; }
+  .cat-card:active{ background:var(--paper-deep); }
+
+  .leaf-card{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:14px; text-align:center;
+    box-shadow:var(--card-shadow);
+    font-size:15px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    min-height:56px;
+  }
+  .leaf-card:active{ background:var(--paper-deep); }
+  .leaf-card.empty{ color:var(--ink-soft); font-weight:600; background:var(--paper-deep); }
+
+  .section-title{
+    font-size:12px; font-weight:700; color:var(--ink-soft);
+    letter-spacing:.08em; margin:4px 2px 10px 2px;
+  }
+
+  .item-list{ display:flex; flex-direction:column; gap:12px; }
+  .item-card{
+    display:flex; gap:12px;
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    padding:10px; box-shadow:var(--card-shadow);
+  }
+  .item-card img{ display:none; }
+  .item-thumb{
+    width:96px; height:96px; border-radius:10px;
+    flex-shrink:0; background:var(--paper-deep);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700; color:var(--ink-soft);
+    text-align:center; line-height:1.4; border:1px dashed var(--line);
+  }
+  .item-info{ display:flex; flex-direction:column; justify-content:center; gap:4px; min-width:0; }
+  .item-code{ font-size:14.5px; font-weight:700; line-height:1.3; }
+  .item-row{ font-size:12.5px; color:var(--ink-soft); }
+  .item-row b{ color:var(--ink); font-weight:600; }
+  .tag{
+    display:inline-block; font-size:10.5px; font-weight:700;
+    color:var(--green-deep); background:#E7EFE8; border-radius:6px;
+    padding:2px 6px; margin-top:2px; width:fit-content;
+  }
+
+  .empty-state{
+    text-align:center; padding:48px 20px;
+    color:var(--ink-soft);
+  }
+  .empty-state .big{ font-size:34px; margin-bottom:10px; }
+  .empty-state .msg{ font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .empty-state .sub{ font-size:13px; color:var(--ink-soft); }
+
+  .note{
+    margin-top:18px; font-size:11.5px; color:var(--ink-soft);
+    padding:10px 12px; background:var(--paper-deep); border-radius:10px;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="mark"></span>
+    <h1>容器カタログ</h1>
+    <span class="sub">社内デモ</span>
+  </div>
+  <div class="crumbs" id="crumbs"></div>
+</header>
+
+<main id="main"></main>
+
+<script>
+var EMBEDDED_DATA = {
+  "categories": [
+    {
+      "key": "bento",
+      "label": "弁当",
+      "hero": "images/bento_hero.png",
+      "children": [
+        { "key": "none", "label": "仕切りなし", "items": [] },
+        { "key": "2",    "label": "二つ仕切り", "items": [] },
+        { "key": "3",    "label": "三つ仕切り", "items": [] },
+        { "key": "4",    "label": "四つ仕切り", "items": [] }
+      ]
+    },
+    {
+      "key": "sushi",
+      "label": "寿司",
+      "children": [
+        {
+          "key": "nigiri",
+          "label": "にぎり",
+          "hero": "images/nigiri_hero.png",
+          "children": [
+            { "key": "2kan",  "label": "2貫",  "items": [] },
+            { "key": "3kan",  "label": "3貫",  "items": [] },
+            { "key": "4kan",  "label": "4貫",  "items": [] },
+            { "key": "5kan",  "label": "5貫",  "items": [
+              { "image": "images/nigiri_5kan.png", "code": "バイオ きわ盛 1-5B", "size": "247×105×25", "material": "バイオHPS" }
+            ]},
+            { "key": "6kan",  "label": "6貫",  "items": [
+              { "image": "images/nigiri_5kan.png", "code": "バイオ きわ盛 1-6OC", "size": "247×105×34", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "8kan",  "label": "8貫",  "items": [
+              { "image": "images/nigiri_8kan.png", "code": "バイオ きわ盛 2-3B",  "size": "175×141×25", "material": "バイオHPS" },
+              { "image": "images/nigiri_8kan.png", "code": "バイオ きわ盛 2-3OC", "size": "176×142×45", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "9kan",  "label": "9貫",  "items": [
+              { "image": "images/nigiri_9kan.png", "code": "バイオ きわ盛 3-3B",  "size": "176×178×25", "material": "バイオHPS" },
+              { "image": "images/nigiri_9kan.png", "code": "バイオ きわ盛 3-3OC", "size": "176×178×45", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "10kan", "label": "10貫", "items": [
+              { "image": "images/nigiri_10kan.png", "code": "バイオ きわ盛 2-4B",  "size": "211×141×25", "material": "バイオHPS" },
+              { "image": "images/nigiri_10kan.png", "code": "バイオ きわ盛 2-4OC", "size": "211×141×45", "material": "バイオPET(クリア蓋)" },
+              { "image": "images/nigiri_10kan.png", "code": "バイオ きわ盛 2-5B",  "size": "247×141×25", "material": "バイオHPS" },
+              { "image": "images/nigiri_10kan.png", "code": "バイオ きわ盛 2-5OC", "size": "247×141×45", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "12kan", "label": "12貫", "items": [
+              { "image": "images/nigiri_12kan.png", "code": "バイオ きわ盛 3-4B",  "size": "211×178×25", "material": "バイオHPS" },
+              { "image": "images/nigiri_12kan.png", "code": "バイオ きわ盛 3-4OC", "size": "211×178×45", "material": "バイオPET(クリア蓋)" }
+            ]}
+          ]
+        },
+        {
+          "key": "maki",
+          "label": "巻き",
+          "hero": "images/maki_hero.png",
+          "children": [
+            { "key": "hoso1.5", "label": "細1.5", "items": [
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 細1.5B",  "size": "146×112×21", "material": "バイオHPS" },
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 細1.5OC", "size": "146×112×34", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "hoso2", "label": "細2", "items": [
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 細2B",  "size": "181×112×21", "material": "バイオHPS" },
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 細2OC", "size": "181×112×34", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "hoso3", "label": "細3", "items": [
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 細3B",  "size": "246×112×21", "material": "バイオHPS" },
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 細3OC", "size": "246×112×34", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "hoso4", "label": "細4", "items": [] },
+            { "key": "futo4", "label": "太4", "items": [
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 太4B",  "size": "232×97×17", "material": "バイオHPS" },
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 太4OC", "size": "232×97×38", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "futo8", "label": "太8", "items": [
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 太8B",  "size": "232×142×17", "material": "バイオHPS" },
+              { "image": "images/maki_hero.png", "code": "バイオ優れ盛 太8OC", "size": "232×142×38", "material": "バイオPET(クリア蓋)" }
+            ]},
+            { "key": "hoso1hon", "label": "細一本", "items": [] },
+            { "key": "futo1hon", "label": "太一本", "items": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sashimi",
+      "label": "刺身",
+      "hero": "images/sashimi_hero.png",
+      "children": [
+        { "key": "1ten", "label": "1点", "items": [] },
+        { "key": "2ten", "label": "2点", "items": [] },
+        { "key": "3ten", "label": "3点", "items": [] },
+        { "key": "4ten", "label": "4点", "items": [] },
+        { "key": "6ten", "label": "6点", "items": [] }
+      ]
+    },
+    {
+      "key": "reisouzai",
+      "label": "冷惣菜",
+      "children": [
+        { "key": "60g",  "label": "60g",  "items": [] },
+        { "key": "70g",  "label": "70g",  "items": [] },
+        { "key": "100g", "label": "100g", "items": [] },
+        { "key": "120g", "label": "120g", "items": [] },
+        { "key": "140g", "label": "140g", "items": [] }
+      ]
+    },
+    {
+      "key": "onsouzai",
+      "label": "温惣菜",
+      "hero": "images/onsouzai_hero.png",
+      "children": [
+        { "key": "60g",  "label": "60g",  "items": [] },
+        { "key": "70g",  "label": "70g",  "items": [] },
+        { "key": "100g", "label": "100g", "items": [] },
+        { "key": "120g", "label": "120g", "items": [] },
+        { "key": "140g", "label": "140g", "items": [] }
+      ]
+    },
+    {
+      "key": "chikusan",
+      "label": "畜産",
+      "children": [
+        { "key": "beef",       "label": "牛肉",       "items": [] },
+        { "key": "pork",       "label": "豚肉",       "items": [] },
+        { "key": "mince",      "label": "ミンチ",      "items": [] },
+        { "key": "roastbeef",  "label": "ローストビーフ", "items": [] }
+      ]
+    }
+  ]
+}
+;
+</script>
+<script>
+(function(){
+  "use strict";
+
+  var state = { path: [], data: null };
+  var mainEl = document.getElementById("main");
+  var crumbsEl = document.getElementById("crumbs");
+
+  var ACCENTS = {
+    bento: "var(--c-bento)",
+    sushi: "var(--c-sushi)",
+    sashimi: "var(--c-sashimi)",
+    reisouzai: "var(--c-reisouzai)",
+    onsouzai: "var(--c-onsouzai)",
+    chikusan: "var(--c-chikusan)"
+  };
+
+  function svgBack(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+  }
+
+  function el(tag, cls, html){
+    var e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html !== undefined) e.innerHTML = html;
+    return e;
+  }
+
+  // Walk state.path (array of keys) from root categories to get current node list/node
+  function resolve(){
+    var nodes = state.data.categories;
+    var node = null;
+    for(var i=0;i<state.path.length;i++){
+      node = nodes.filter(function(n){ return n.key === state.path[i]; })[0];
+      if(!node) break;
+      nodes = node.children || [];
+    }
+    return { node: node, nodes: nodes };
+  }
+
+  function renderCrumbs(){
+    crumbsEl.innerHTML = "";
+    var homeBtn = el("button", null, "容器カタログ");
+    homeBtn.addEventListener("click", function(){ state.path = []; render(); });
+    crumbsEl.appendChild(homeBtn);
+
+    var nodes = state.data.categories;
+    var acc = [];
+    for(var i=0;i<state.path.length;i++){
+      var key = state.path[i];
+      var node = nodes.filter(function(n){ return n.key === key; })[0];
+      if(!node) break;
+      acc.push(key);
+      crumbsEl.appendChild(el("span", "sep", "›"));
+      if(i === state.path.length - 1){
+        crumbsEl.appendChild(el("span", "current", node.label));
+      } else {
+        (function(pathCopy, label){
+          var b = el("button", null, label);
+          b.addEventListener("click", function(){ state.path = pathCopy; render(); });
+          crumbsEl.appendChild(b);
+        })(acc.slice(), node.label);
+      }
+      nodes = node.children || [];
+    }
+  }
+
+  function renderBackBar(){
+    if(state.path.length === 0) return;
+    var bar = el("div", "backbar");
+    var btn = el("button", "backbtn", svgBack() + "<span>戻る</span>");
+    btn.addEventListener("click", function(){ state.path.pop(); render(); });
+    bar.appendChild(btn);
+    mainEl.appendChild(bar);
+  }
+
+  function renderCategoryTitle(label){
+    mainEl.appendChild(el("div", "cat-title", label));
+  }
+
+  function renderCategoryGrid(nodes, rootLevel){
+    var grid = el("div", "grid top");
+    nodes.forEach(function(n){
+      var card = el("button", "cat-card");
+      if(rootLevel && ACCENTS[n.key]){
+        card.style.setProperty("--accent", ACCENTS[n.key]);
+      }
+      var count = countLeavesWithItems(n);
+      var metaText = n.children ?
+        (isLeafGroup(n) ? "" : (n.children.length + "分類")) : "";
+      card.innerHTML = '<div class="name">' + n.label + '</div>' +
+        (metaText ? '<div class="meta">' + metaText + '</div>' : '');
+      card.addEventListener("click", function(){
+        state.path.push(n.key);
+        render();
+      });
+      grid.appendChild(card);
+    });
+    mainEl.appendChild(grid);
+  }
+
+  function isLeafGroup(node){
+    // true if children are terminal (have "items" property)
+    return node.children && node.children.length > 0 && node.children[0].hasOwnProperty("items");
+  }
+
+  function countLeavesWithItems(node){
+    if(!node.children) return 0;
+    if(isLeafGroup(node)){
+      return node.children.filter(function(c){ return c.items && c.items.length>0; }).length;
+    }
+    var total = 0;
+    node.children.forEach(function(c){ total += countLeavesWithItems(c); });
+    return total;
+  }
+
+  function renderLeafGrid(nodes){
+    var grid = el("div", "grid");
+    nodes.forEach(function(n){
+      var has = n.items && n.items.length > 0;
+      var card = el("button", "leaf-card" + (has ? "" : " empty"), n.label + (has ? "" : "\n準備中"));
+      card.style.whiteSpace = "pre-line";
+      card.addEventListener("click", function(){
+        state.path.push(n.key);
+        render();
+      });
+      grid.appendChild(card);
+    });
+    mainEl.appendChild(grid);
+  }
+
+  function renderItems(node){
+    if(!node.items || node.items.length === 0){
+      var empty = el("div", "empty-state");
+      empty.innerHTML = '<div class="big">🗂️</div>' +
+        '<div class="msg">この分類はまだ準備中です</div>' +
+        '<div class="sub">型番データが登録され次第、表示されます</div>';
+      mainEl.appendChild(empty);
+      return;
+    }
+    mainEl.appendChild(el("div", "section-title", "該当商品 " + node.items.length + "件"));
+    var list = el("div", "item-list");
+    node.items.forEach(function(item){
+      var card = el("div", "item-card");
+      var img = el("div", "item-thumb", "商品画像");
+      card.appendChild(img);
+      var info = el("div", "item-info");
+      info.innerHTML =
+        '<div class="item-code">' + item.code + '</div>' +
+        '<div class="item-row">サイズ　<b>' + item.size + '</b></div>' +
+        '<div class="item-row">材質　<b>' + item.material + '</b></div>' +
+        '<span class="tag">実カタログ準拠</span>';
+      card.appendChild(info);
+      list.appendChild(card);
+    });
+    mainEl.appendChild(list);
+  }
+
+  function render(){
+    mainEl.innerHTML = "";
+    renderCrumbs();
+    renderBackBar();
+
+    var r = resolve();
+
+    if(state.path.length === 0){
+      renderCategoryGrid(state.data.categories, true);
+      mainEl.appendChild(el("div", "note",
+        "※ このカタログは社内デモ用です。にぎり・巻きの一部サイズは実際の型番・サイズを反映しています。それ以外は準備中、または表示のみのサンプルです。"));
+      return;
+    }
+
+    var node = r.node;
+    if(!node) { state.path = []; render(); return; }
+
+    if(node.hasOwnProperty("items")){
+      renderCategoryTitle(node.label);
+      renderItems(node);
+    } else if(isLeafGroup(node)){
+      renderCategoryTitle(node.label);
+      renderLeafGrid(node.children);
+    } else {
+      renderCategoryTitle(node.label);
+      renderCategoryGrid(node.children, false);
+    }
+  }
+
+  try {
+    state.data = EMBEDDED_DATA;
+    render();
+  } catch(err){
+    mainEl.innerHTML = '<div class="empty-state"><div class="big">⚠️</div>' +
+      '<div class="msg">データの読み込みに失敗しました</div></div>';
+    console.error(err);
+  }
+
+})();
+</script>
+</body>
+</html>
